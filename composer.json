@@ -1,0 +1,22 @@
+{
+    "name": "molecular/queueprocessmanager",
+    "description": "PHP Queue Process Manager",
+    "authors": [
+        {
+            "name": "Antonio",
+            "email": "toninho0007@yahoo.com.br"
+        }
+    ],
+    "require": {
+        "jeremeamia/SuperClosure": "^2.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpQPM\\": "src/PhpQPM",
+            "Tests\\": "test/"
+        }
+    }
+}
