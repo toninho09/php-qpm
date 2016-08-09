@@ -16,6 +16,7 @@ class Process
     private $id;
     private $process;
     private $attempts;
+    private $queue;
     private $reserved;
     private $reservedAt;
     private $error;
@@ -286,6 +287,23 @@ class Process
     {
         $this->queueHandle = $queueHandle;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getQueue()
+    {
+        return $this->queue;
+    }
+
+    /**
+     * @param mixed $queue
+     */
+    public function setQueue($queue)
+    {
+        $this->queue = $queue;
+    }
+
 
 
 }

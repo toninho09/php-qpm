@@ -11,7 +11,7 @@
         "jeremeamia/SuperClosure": "^2.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.5"
+        "phpunit/phpunit": "^4.8"
     },
     "autoload": {
         "psr-4": {
