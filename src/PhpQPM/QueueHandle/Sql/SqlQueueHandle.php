@@ -35,6 +35,7 @@ class SqlQueueHandle implements QueueHandleInterface
     public function connect($dsn,$username = '',$password = '',$options = []){
         $this->conn = new PDO($dsn,$username,$password,$options);
         $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
+        $this->conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
     public function isConected()
@@ -136,22 +137,38 @@ class SqlQueueHandle implements QueueHandleInterface
     {
         if($queue === null)$queue = $this->queue;
         $this->conn->beginTransaction();
-        $sth = $this->conn->prepare("select * from queue where reserved = 0 order by id desc");
+        $sth = $this->conn->prepare("select id from queue where reserved = 0 and queue = :queue order by id desc");
+        $sth->bindValue(":queue",$queue);
+        $sth->execute();
+        $obj = $sth->fetchObject();
+        if(empty($obj)) return null;
+        $process = $this->getProcess($obj->id);
+        $process->reserve();
+        $process->addAttempts();
+        $this->updateQueue($process);
+        $this->conn->commit();
+        return $process;
+
     }
 
-    public function finishProcess(Process &$process, $queue = 'default')
+    public function finishProcess(Process &$process, $queue = null)
     {
-        // TODO: Implement finishProcess() method.
+        $process->setFinishAt(date('Y-m-d H:i:s'));
+        $this->updateQueue($process,$queue);
     }
 
-    public function failedProcess(Process &$process, $queue = 'default')
+    public function failedProcess(Process &$process , $error = '', $queue = 'default')
     {
-        // TODO: Implement failedProcess() method.
+        $process->setError($error);
+        $process->setFinishAt(date('Y-m-d H:i:s'));
+        $this->updateQueue($process,$queue);
     }
 
     public function removeProcess($id)
     {
-        // TODO: Implement removeProcess() method.
+        $sth = $this->conn->prepare("delete from queue where id = :id");
+        $sth->bindValue(':id',$id);
+        $sth->execute();
     }
 
     /**

@@ -46,4 +46,29 @@ class SqlQueueHandleTest extends PHPUnit_Framework_TestCase
         $handle->clearQueue();
         $this->assertEquals($handle->hasProcess(),false);
     }
+
+    public function testReservProcess(){
+        $handle = new SqlQueueHandle();
+        $handle->connect('mysql:host=localhost;dbname=QueueManager', 'teste', 'teste');
+        $handle->clearQueue();
+        $process = new \PhpQPM\Process('teste',$handle);
+        $process->setType(1);
+        $process = $handle->putProcess($process);
+        $this->assertEquals($handle->hasProcess(),true);
+        $processReserved = $handle->reserveProcess();
+        $this->assertEquals($handle->hasProcess(),false);
+    }
+
+    public function testFinishProcess(){
+        $handle = new SqlQueueHandle();
+        $handle->connect('mysql:host=localhost;dbname=QueueManager', 'teste', 'teste');
+        $handle->clearQueue();
+        $process = new \PhpQPM\Process('teste',$handle);
+        $process->setType(1);
+        $process = $handle->putProcess($process);
+        $this->assertEquals($handle->hasProcess(),true);
+        $processReserved = $handle->reserveProcess();
+        $processReserved->setReturn('10');
+        $handle->finishProcess($processReserved);
+    }
 }

@@ -172,7 +172,7 @@ class Process
      */
     public function reserve()
     {
-        $this->setReservedAt(date('Y-m-d h:i:s'));
+        $this->setReservedAt(date('Y-m-d H:i:s'));
         $this->setReserved(true);
     }
 
