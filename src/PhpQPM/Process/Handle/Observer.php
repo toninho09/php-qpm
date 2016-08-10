@@ -15,7 +15,7 @@ class Observer
 {
     protected $process;
 
-    public function __construct(Process $process)
+    public function __construct(Process &$process)
     {
         $this->process = $process;
     }
@@ -37,11 +37,15 @@ class Observer
     }
 
     public function isWait(){
-        return $this->isWait();
+        return $this->process->isWait();
     }
 
     public function getReturn(){
         return $this->process->getReturn();
+    }
+
+    public function update(){
+        return $this->process->update();
     }
 
 

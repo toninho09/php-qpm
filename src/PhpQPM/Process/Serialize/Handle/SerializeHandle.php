@@ -12,7 +12,7 @@ namespace PhpQPM\Process\Serialize\Handle;
 use PhpQPM\Process\ProcessQueueableInterface;
 use PhpQPM\Process\Serialize\ClosureSerialize;
 use PhpQPM\Process\Serialize\DetectedType;
-use PhpQPM\Process\Serialize\Exeption\UnSerializableException;
+use PhpQPM\Process\Serialize\Exception\UnSerializableException;
 use PhpQPM\Process\Serialize\ObjectSerialize;
 
 class SerializeHandle
@@ -39,7 +39,7 @@ class SerializeHandle
                 return $serialize->serialize($process);
             case DetectedType::CLOSURE :
                 $serialize = new ClosureSerialize();
-                $serialize->serialize($process);
+                return $serialize->serialize($process);
                 break;
         }
         throw new UnSerializableException();
@@ -55,10 +55,10 @@ class SerializeHandle
         switch ($type){
             case DetectedType::OBJECT :
                 $serialize = new ObjectSerialize();
-                return $serialize->serialize($process);
+                return $serialize->unSerialize($process);
             case DetectedType::CLOSURE :
                 $serialize = new ClosureSerialize();
-                $serialize->serialize($process);
+                return $serialize->unSerialize($process);
                 break;
         }
         throw new UnSerializableException();

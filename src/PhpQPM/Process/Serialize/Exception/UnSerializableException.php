@@ -6,7 +6,7 @@
  * Time: 01:24
  */
 
-namespace PhpQPM\Process\Serialize\Exeption;
+namespace PhpQPM\Process\Serialize\Exception;
 
 
 class UnSerializableException extends \ErrorException

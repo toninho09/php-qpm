@@ -53,6 +53,13 @@ class Process
         $this->queueHandle->updateProcess($this);
     }
 
+    public function updateQueue(){
+        if ($this->queueHandle == null) {
+            throw new \ErrorException("The Queue Handle is not defined");
+        }
+        $this->queueHandle->updateQueue($this,$this->queue);
+    }
+
     /**
      * @return int
      */

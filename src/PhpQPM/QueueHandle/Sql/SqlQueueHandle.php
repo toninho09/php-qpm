@@ -71,7 +71,10 @@ class SqlQueueHandle implements QueueHandleInterface
 
     public function updateProcess(Process &$process)
     {
-        return SqlProcessFactory::update($process,$this->getProcess($process->getId()));
+        $sth = $this->conn->prepare("SELECT * FROM queue WHERE id = :id");
+        $sth->bindValue(':id',$process->getId());
+        $sth->execute();
+        return SqlProcessFactory::update($process,$sth->fetchObject());
     }
 
     public function updateQueue(Process $process, $queue = null)
@@ -145,7 +148,7 @@ class SqlQueueHandle implements QueueHandleInterface
         $process = $this->getProcess($obj->id);
         $process->reserve();
         $process->addAttempts();
-        $this->updateQueue($process);
+        $process->updateQueue();
         $this->conn->commit();
         return $process;
 
@@ -154,14 +157,14 @@ class SqlQueueHandle implements QueueHandleInterface
     public function finishProcess(Process &$process, $queue = null)
     {
         $process->setFinishAt(date('Y-m-d H:i:s'));
-        $this->updateQueue($process,$queue);
+        $process->updateQueue();
     }
 
     public function failedProcess(Process &$process , $error = '', $queue = 'default')
     {
         $process->setError($error);
         $process->setFinishAt(date('Y-m-d H:i:s'));
-        $this->updateQueue($process,$queue);
+        $process->updateQueue();
     }
 
     public function removeProcess($id)

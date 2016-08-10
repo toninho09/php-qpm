@@ -9,7 +9,27 @@
 namespace PhpQPM\Process;
 
 
-class ProcessQueueableInterface
+abstract class ProcessQueueableInterface
 {
+    protected $process;
+
+    /**
+     * @return mixed
+     */
+    public function getProcess()
+    {
+        return $this->process;
+    }
+
+    /**
+     * @param mixed $process
+     */
+    public function setProcess(&$process)
+    {
+        $this->process = $process;
+    }
+
+
+    abstract public function run();
 
 }

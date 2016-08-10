@@ -10,7 +10,7 @@ namespace PhpQPM;
 
 
 use PhpQPM\Process\Handle\Observer;
-use PhpQPM\Process\Serialize\Exeption\UnSerializableException;
+use PhpQPM\Process\Serialize\Exception\UnSerializableException;
 use PhpQPM\Process\Serialize\Handle\SerializeHandle;
 use PhpQPM\QueueHandle\QueueHandleInterface;
 
@@ -25,8 +25,9 @@ class Manager
     /**
      * Manager constructor.
      */
-    public function __construct()
+    public function __construct(QueueHandleInterface $queueHandle)
     {
+        $this->queueHandle = $queueHandle;
         $this->serializeHandle = new SerializeHandle();
     }
 
@@ -34,12 +35,29 @@ class Manager
         if(!$this->serializeHandle->isSerializable($process)) throw new UnSerializableException();
         $processDao = new Process($this->serializeHandle->serializeProcess($process),$this->queueHandle);
         $processDao->setType($this->serializeHandle->getType($process));
-        $this->queueHandle->putProcess($processDao,$queue);
+        $processDao = $this->queueHandle->putProcess($processDao,$queue);
         return new Observer($processDao);
     }
 
+    public function hasProcess(){
+        return $this->queueHandle->hasProcess();
+    }
+
+    public function reserveProcess(){
+        if(!$this->hasProcess()) return null;
+        return $this->queueHandle->reserveProcess();
+    }
+
+    public function getUnSerializeProcess(Process $process){
+        return $this->serializeHandle->unserializeProcess($process->getProcess(),$process->getType());
+    }
+
+    public function createWorker(){
+        return new Worker($this);
+    }
+
     /**
-     * @return mixed
+     * @return QueueHandleInterface
      */
     public function getQueueHandle()
     {
