@@ -45,7 +45,15 @@ class Observer
     }
 
     public function update(){
-        return $this->process->update();
+        $this->process->update();
+    }
+
+    public function hasError(){
+        return $this->process->hasError();
+    }
+
+    public function getError(){
+        return $this->process->getError();
     }
 
 

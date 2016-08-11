@@ -9,8 +9,8 @@
 namespace PhpQPM\Process\Serialize;
 
 
-use PhpQPM\Process\ProcessQueueableInterface;
-use PhpQPM\Process\Serialize\Exeption\UnSerializableException;
+use PhpQPM\Process\ProcessQueueable;
+use PhpQPM\Process\Serialize\Exception\UnSerializableException;
 
 class DetectedType
 {
@@ -23,7 +23,7 @@ class DetectedType
      * @throws \ErrorException
      */
     public function detectType($process){
-        if($process instanceof ProcessQueueableInterface) return self::OBJECT;
+        if($process instanceof ProcessQueueable) return self::OBJECT;
         if($process instanceof \Closure) return self::CLOSURE;
         throw new UnSerializableException();
     }
@@ -33,7 +33,7 @@ class DetectedType
      * @return bool
      */
     public function isSerializable($process){
-        if($process instanceof ProcessQueueableInterface) return true;
+        if($process instanceof ProcessQueueable) return true;
         if($process instanceof \Closure) return true;
         return false;
     }

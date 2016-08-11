@@ -24,6 +24,7 @@ class Manager
 
     /**
      * Manager constructor.
+     * @param QueueHandleInterface $queueHandle
      */
     public function __construct(QueueHandleInterface $queueHandle)
     {

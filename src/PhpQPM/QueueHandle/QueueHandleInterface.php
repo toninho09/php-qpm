@@ -32,8 +32,7 @@ interface QueueHandleInterface
 
     /**
      * @param Process $process
-     * @param string $queue
-     * @return void
+     * @internal param string $queue
      */
     public function updateProcess(Process &$process);
 
@@ -80,10 +79,10 @@ interface QueueHandleInterface
 
     /**
      * @param Process $process
+     * @param string $error
      * @param string $queue
-     * @return void
      */
-    public function failedProcess(Process &$process, $queue = 'default');
+    public function failedProcess(Process &$process,$error = '', $queue = 'default');
 
     /**
      * @param $id

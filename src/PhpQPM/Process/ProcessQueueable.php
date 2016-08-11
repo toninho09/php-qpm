@@ -9,7 +9,7 @@
 namespace PhpQPM\Process;
 
 
-abstract class ProcessQueueableInterface
+abstract class ProcessQueueable
 {
     protected $process;
 

@@ -15,8 +15,9 @@ class ManagerTest extends PHPUnit_Framework_TestCase
         $handle->clearQueue();
         $worker = $manager->createWorker();
 
-        $process = $manager->putProcessOnQueue(function(){
-           return '10';
+        $var1 = 10;
+        $process = $manager->putProcessOnQueue(function() use($var1){
+           return 10 + $var1;
         });
 
         $process->update();
@@ -26,7 +27,46 @@ class ManagerTest extends PHPUnit_Framework_TestCase
         $process->update();
         $this->assertEquals($manager->getQueueHandle()->hasProcess(),false);
         $this->assertEquals($process->isFinish(),true);
-        $this->assertEquals($process->getReturn(),'10');
+        $this->assertEquals($process->getReturn(),20);
+    }
+
+    public function testClassQueueable(){
+        $handle = new \PhpQPM\QueueHandle\Sql\SqlQueueHandle();
+        $handle->connect('mysql:host=localhost;dbname=QueueManager', 'teste', 'teste');
+        $manager = new \PhpQPM\Manager($handle);
+        $handle->clearQueue();
+        $worker = $manager->createWorker();
+
+        $process = $manager->putProcessOnQueue(new \Tests\SimpleProcess());
+        $process->update();
+        $this->assertEquals($process->isWait(),true);
+        $worker->runNextWork();
+        $process->update();
+        $this->assertEquals($process->isWait(),false);
+        $this->assertEquals($process->isReserved(),true);
+        $this->assertEquals($process->isFinish(), true);
+        $this->assertEquals($process->hasError(),false);
+        $this->assertEquals($process->getReturn(),10);
+
+    }
+
+    public function testClassWithVarQueueable(){
+        $handle = new \PhpQPM\QueueHandle\Sql\SqlQueueHandle();
+        $handle->connect('mysql:host=localhost;dbname=QueueManager', 'teste', 'teste');
+        $manager = new \PhpQPM\Manager($handle);
+        $handle->clearQueue();
+        $worker = $manager->createWorker();
+
+        $process = $manager->putProcessOnQueue(new \Tests\VarOnContructorProcess(10));
+        $process->update();
+        $this->assertEquals($process->isWait(),true);
+        $worker->runNextWork();
+        $process->update();
+        $this->assertEquals($process->isWait(),false);
+        $this->assertEquals($process->isReserved(),true);
+        $this->assertEquals($process->isFinish(), true);
+        $this->assertEquals($process->hasError(),false);
+        $this->assertEquals($process->getReturn(),10);
 
     }
 }

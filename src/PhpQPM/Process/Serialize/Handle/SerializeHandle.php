@@ -9,7 +9,7 @@
 namespace PhpQPM\Process\Serialize\Handle;
 
 
-use PhpQPM\Process\ProcessQueueableInterface;
+use PhpQPM\Process\ProcessQueueable;
 use PhpQPM\Process\Serialize\ClosureSerialize;
 use PhpQPM\Process\Serialize\DetectedType;
 use PhpQPM\Process\Serialize\Exception\UnSerializableException;
@@ -29,7 +29,7 @@ class SerializeHandle
 
     /**
      * @param $process
-     * @return ProcessQueueableInterface| \Closure
+     * @return ProcessQueueable| \Closure
      * @throws UnSerializableException
      */
     public function serializeProcess($process){

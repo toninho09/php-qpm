@@ -107,6 +107,7 @@ class SqlQueueHandle implements QueueHandleInterface
     }
 
     /**
+     * @param null $queue
      * @return int
      */
     public function processInQueue($queue = null)

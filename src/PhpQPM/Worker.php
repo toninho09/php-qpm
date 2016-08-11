@@ -9,7 +9,7 @@
 namespace PhpQPM;
 
 
-use PhpQPM\Process\ProcessQueueableInterface;
+use PhpQPM\Process\ProcessQueueable;
 
 class Worker
 {
@@ -32,7 +32,7 @@ class Worker
     public function __construct(Manager $manager)
     {
         $this->manager = $manager;
-        $this->waitQueue = 5;
+        $this->waitQueue = 1;
     }
 
     private function reserve(){
@@ -42,8 +42,11 @@ class Worker
 
     public function work(){
         while(true){
-            if(!$this->manager->hasProcess()) sleep($this->waitQueue);
-            $this->runNextWork();
+            if(!$this->manager->hasProcess()){
+                sleep($this->waitQueue);
+            }else{
+                $this->runNextWork();
+            }
         }
     }
 
@@ -53,7 +56,7 @@ class Worker
             $this->reserve();
             $process = $this->manager->getUnSerializeProcess($this->actualProcess);
             if($process instanceof \Closure) $this->actualProcess->setReturn($process());
-            if($process instanceof ProcessQueueableInterface) {
+            if($process instanceof ProcessQueueable) {
                 $process->setProcess($this->actualProcess);
                 $this->actualProcess->setReturn($process->run());
             }
