@@ -46,6 +46,7 @@ class Observer
 
     public function update(){
         $this->process->update();
+        return $this->process;
     }
 
     public function hasError(){

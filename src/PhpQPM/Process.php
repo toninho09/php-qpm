@@ -51,6 +51,7 @@ class Process
             throw new \ErrorException("The Queue Handle is not defined");
         }
         $this->queueHandle->updateProcess($this);
+        return $this;
     }
 
     public function updateQueue(){
