@@ -9,7 +9,7 @@ são executados de forma assíncrona com a thread atual da requisição, mais qu
 
 ###Requerimentos
 
-* PHP >= 5.3.*
+* PHP >= 5.4.*
 
 ####Uso Básico
 O uso se resume em um cliente que coloca processos na fila, da mesma forma tem os consumidores, que 
