@@ -36,6 +36,7 @@ class SqlQueueHandle implements QueueHandleInterface
         $this->conn = new PDO($dsn,$username,$password,$options);
         $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
         $this->conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->createTable();
     }
 
     public function isConected()
@@ -47,6 +48,39 @@ class SqlQueueHandle implements QueueHandleInterface
         }catch (\Exception $ex){
             return false;
         }
+    }
+
+    public function checkTable(){
+        $sth = $this->conn->prepare("SELECT id,queue,`process`,attempts,reserved,`error`,`return`,`type`,create_at,reserved_at,finish_at FROM QueueManager.queue limit 1");
+        try{
+            return (boolean) $sth->execute();
+        }catch (\Exception $ex){
+            return false;
+        }
+    }
+
+    public function droptable(){
+        $sth = $this->conn->prepare("DROP TABLE IF EXISTS queue");
+        $sth->execute();
+    }
+
+    public function createTable(){
+        $sth = $this->conn->prepare("CREATE TABLE IF NOT EXISTS `queue` (
+          `id` int(11) NOT NULL AUTO_INCREMENT,
+          `queue` varchar(255) DEFAULT 'default',
+          `process` text NOT NULL,
+          `attempts` int(11) NOT NULL DEFAULT '0',
+          `reserved` int(11) NOT NULL DEFAULT '0',
+          `error` text,
+          `return` text,
+          `type` int(11) NOT NULL,
+          `create_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+          `reserved_at` timestamp NULL DEFAULT NULL,
+          `finish_at` timestamp NULL DEFAULT NULL,
+          PRIMARY KEY (`id`),
+          KEY `IDX_QUEUE_ID_RESERVED` (`id`,`reserved`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+        $sth->execute();
     }
 
     public function putProcess(Process &$process, $queue = null)
@@ -190,6 +224,8 @@ class SqlQueueHandle implements QueueHandleInterface
     {
         $this->tableName = $tableName;
     }
+
+
 
 
 }

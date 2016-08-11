@@ -71,4 +71,16 @@ class SqlQueueHandleTest extends PHPUnit_Framework_TestCase
         $processReserved->setReturn('10');
         $handle->finishProcess($processReserved);
     }
+
+    public function testCreateTable(){
+        $handle = new SqlQueueHandle();
+        $handle->connect('mysql:host=localhost;dbname=QueueManager', 'teste', 'teste');
+        $handle->createTable();
+        if($handle->checkTable()){
+            $handle->droptable();
+        }
+        $this->assertEquals($handle->checkTable(),false);
+        $handle->createTable();
+        $this->assertEquals($handle->checkTable(),true);
+    }
 }

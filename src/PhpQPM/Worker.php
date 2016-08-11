@@ -58,7 +58,12 @@ class Worker
             if($process instanceof \Closure) $this->actualProcess->setReturn($process());
             if($process instanceof ProcessQueueable) {
                 $process->setProcess($this->actualProcess);
-                $this->actualProcess->setReturn($process->run());
+                try{
+                    $this->actualProcess->setReturn($process->run());
+                }catch (\Exception $ex){
+                    $process->onFailed();
+                    throw $ex;
+                }
             }
             $this->manager->getQueueHandle()->finishProcess($this->actualProcess);
         }catch (\Exception $ex){

@@ -9,12 +9,17 @@
 namespace PhpQPM\Process;
 
 
+use PhpQPM\Process;
+
 abstract class ProcessQueueable
 {
+    /**
+     * @var Process
+     */
     protected $process;
 
     /**
-     * @return mixed
+     * @return Process
      */
     public function getProcess()
     {
@@ -22,14 +27,27 @@ abstract class ProcessQueueable
     }
 
     /**
-     * @param mixed $process
+     * @param Process $process
      */
     public function setProcess(&$process)
     {
         $this->process = $process;
     }
 
-
     abstract public function run();
+
+    public function onFailed()
+    {
+
+    }
+
+    public function retry(){
+        $this->process->setReserved(0);
+        $this->process->setReservedAt(null);
+        $this->process->setFinishAt(null);
+        $this->process->setReturn(null);
+        $this->process->setError(null);
+        $this->process->updateQueue();
+    }
 
 }
