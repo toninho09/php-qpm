@@ -85,7 +85,7 @@ class SqlQueueHandle implements QueueHandleInterface
         $sth->bindValue(':queue',$process->getQueue());
         $sth->bindValue(':process',$process->getProcess());
         $sth->bindValue(':attempts',$process->getAttempts());
-        $sth->bindValue(':reserved',$process->isReserved());
+        $sth->bindValue(':reserved',$process->isReserved() ? 1 : 0);
         $sth->bindValue(':error',$process->getError());
         $sth->bindValue(':return',$process->getReturn());
         $sth->bindValue(':type',$process->getType());
