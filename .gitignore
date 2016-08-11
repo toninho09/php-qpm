@@ -47,4 +47,5 @@ Temporary Items
 .apdisk
 
 /vendor/
+.idea/
 /.idea/
