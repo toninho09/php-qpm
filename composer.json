@@ -8,7 +8,7 @@
         }
     ],
     "require": {
-        "jeremeamia/SuperClosure": "^2.2"
+        "jeremeamia/SuperClosure": "~2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.8"
