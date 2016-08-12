@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests;
+use PHPUnit_Framework_TestCase;
 /**
  * Created by PhpStorm.
  * User: Zenner

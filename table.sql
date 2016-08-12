@@ -12,4 +12,4 @@ CREATE TABLE `queue` (
   `finish_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `IDX_QUEUE_ID_RESERVED` (`id`,`reserved`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+);

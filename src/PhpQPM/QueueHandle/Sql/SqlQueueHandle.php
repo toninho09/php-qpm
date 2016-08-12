@@ -18,9 +18,9 @@ class SqlQueueHandle implements QueueHandleInterface
     /**
      * @var PDO
      */
-    private $conn;
-    private $tableName = 'queue';
-    private $queue;
+    protected $conn;
+    protected $tableName = 'queue';
+    protected $queue;
 
     /**
      * SqlQueueHandle constructor.
@@ -51,8 +51,8 @@ class SqlQueueHandle implements QueueHandleInterface
     }
 
     public function checkTable(){
-        $sth = $this->conn->prepare("SELECT id,queue,`process`,attempts,reserved,`error`,`return`,`type`,create_at,reserved_at,finish_at FROM QueueManager.queue limit 1");
         try{
+            $sth = $this->conn->prepare("SELECT id,queue,`process`,attempts,reserved,`error`,`return`,`type`,create_at,reserved_at,finish_at FROM queue limit 1");
             return (boolean) $sth->execute();
         }catch (\Exception $ex){
             return false;
@@ -77,9 +77,8 @@ class SqlQueueHandle implements QueueHandleInterface
           `create_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
           `reserved_at` timestamp NULL DEFAULT NULL,
           `finish_at` timestamp NULL DEFAULT NULL,
-          PRIMARY KEY (`id`),
-          KEY `IDX_QUEUE_ID_RESERVED` (`id`,`reserved`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+          PRIMARY KEY (`id`)
+        )");
         $sth->execute();
     }
 
@@ -166,7 +165,7 @@ class SqlQueueHandle implements QueueHandleInterface
             $sth = $this->conn->prepare("delete from queue where queue = :queue");
             $sth->bindValue(':queue',$queue);
         }else{
-            $sth = $this->conn->prepare("truncate queue");
+            $sth = $this->conn->prepare("delete from queue");
         }
         $sth->execute();
     }

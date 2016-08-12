@@ -1,5 +1,8 @@
 <?php
 
+namespace Tests;
+use PHPUnit_Framework_TestCase;
+
 /**
  * Created by PhpStorm.
  * User: antonio
@@ -8,36 +11,39 @@
  */
 class ManagerTest extends PHPUnit_Framework_TestCase
 {
-    public function testConsumeWorker(){
-        $handle = new \PhpQPM\QueueHandle\Sql\SqlQueueHandle();
-        $handle->connect('mysql:host=localhost;dbname=QueueManager', 'teste', 'teste');
-        $manager = new \PhpQPM\Manager($handle);
-        $handle->clearQueue();
-        $worker = $manager->createWorker();
+    protected $manager;
+    protected $handle;
 
+    protected function setUp()
+    {
+        $this->handle = new \PhpQPM\QueueHandle\Sql\SqlQueueHandle();
+        $this->handle->connect('mysql:host=localhost;dbname=QueueManager', 'teste', 'teste');
+        $this->manager = new \PhpQPM\Manager($this->handle);
+        $this->handle->clearQueue();
+    }
+
+    public function testConsumeWorker(){
+
+        $worker = $this->manager->createWorker();
         $var1 = 10;
-        $process = $manager->putProcessOnQueue(function() use($var1){
+        $process = $this->manager->putProcessOnQueue(function() use($var1){
            return 10 + $var1;
         });
 
         $process->update();
         $this->assertEquals($process->isWait(),true);
-        $this->assertEquals($manager->getQueueHandle()->hasProcess(),true);
+        $this->assertEquals($this->manager->getQueueHandle()->hasProcess(),true);
         $worker->runNextWork();
         $process->update();
-        $this->assertEquals($manager->getQueueHandle()->hasProcess(),false);
+        $this->assertEquals($this->manager->getQueueHandle()->hasProcess(),false);
         $this->assertEquals($process->isFinish(),true);
         $this->assertEquals($process->getReturn(),20);
     }
 
     public function testClassQueueable(){
-        $handle = new \PhpQPM\QueueHandle\Sql\SqlQueueHandle();
-        $handle->connect('mysql:host=localhost;dbname=QueueManager', 'teste', 'teste');
-        $manager = new \PhpQPM\Manager($handle);
-        $handle->clearQueue();
-        $worker = $manager->createWorker();
+        $worker = $this->manager->createWorker();
 
-        $process = $manager->putProcessOnQueue(new \Tests\SimpleProcess());
+        $process = $this->manager->putProcessOnQueue(new \Tests\SimpleProcess());
         $process->update();
         $this->assertEquals($process->isWait(),true);
         $worker->runNextWork();
@@ -51,13 +57,9 @@ class ManagerTest extends PHPUnit_Framework_TestCase
     }
 
     public function testClassWithVarQueueable(){
-        $handle = new \PhpQPM\QueueHandle\Sql\SqlQueueHandle();
-        $handle->connect('mysql:host=localhost;dbname=QueueManager', 'teste', 'teste');
-        $manager = new \PhpQPM\Manager($handle);
-        $handle->clearQueue();
-        $worker = $manager->createWorker();
 
-        $process = $manager->putProcessOnQueue(new \Tests\VarOnContructorProcess(10));
+        $worker = $this->manager->createWorker();
+        $process = $this->manager->putProcessOnQueue(new \Tests\VarOnContructorProcess(10));
         $process->update();
         $this->assertEquals($process->isWait(),true);
         $worker->runNextWork();
