@@ -9,8 +9,15 @@
 namespace PhpQPM\QueueHandle\Sql;
 
 
+/**
+ * Class SqliteQueueHandle
+ * @package PhpQPM\QueueHandle\Sql
+ */
 class SqliteQueueHandle extends SqlQueueHandle
 {
+    /**
+     *
+     */
     public function createTable()
     {
         $sth = $this->conn->prepare("CREATE TABLE IF NOT EXISTS `queue` (
