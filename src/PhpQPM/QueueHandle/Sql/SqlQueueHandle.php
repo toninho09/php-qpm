@@ -13,13 +13,23 @@ use PDO;
 use PhpQPM\Process;
 use PhpQPM\QueueHandle\QueueHandleInterface;
 
+/**
+ * Class SqlQueueHandle
+ * @package PhpQPM\QueueHandle\Sql
+ */
 class SqlQueueHandle implements QueueHandleInterface
 {
     /**
      * @var PDO
      */
     protected $conn;
+    /**
+     * @var string
+     */
     protected $tableName = 'queue';
+    /**
+     * @var string
+     */
     protected $queue;
 
     /**
@@ -32,13 +42,22 @@ class SqlQueueHandle implements QueueHandleInterface
         $this->queue = 'default';
     }
 
-    public function connect($dsn,$username = '',$password = '',$options = []){
+    /**
+     * @param $dsn
+     * @param string $username
+     * @param string $password
+     * @param array $options
+     */
+    public function connect($dsn, $username = '', $password = '', $options = []){
         $this->conn = new PDO($dsn,$username,$password,$options);
         $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
         $this->conn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->createTable();
     }
 
+    /**
+     * @return bool
+     */
     public function isConected()
     {
         try{
@@ -50,6 +69,9 @@ class SqlQueueHandle implements QueueHandleInterface
         }
     }
 
+    /**
+     * @return bool
+     */
     public function checkTable(){
         try{
             $sth = $this->conn->prepare("SELECT id,queue,`process`,attempts,reserved,`error`,`return`,`type`,create_at,reserved_at,finish_at FROM queue limit 1");
@@ -59,11 +81,17 @@ class SqlQueueHandle implements QueueHandleInterface
         }
     }
 
+    /**
+     *
+     */
     public function droptable(){
         $sth = $this->conn->prepare("DROP TABLE IF EXISTS queue");
         $sth->execute();
     }
 
+    /**
+     *
+     */
     public function createTable(){
         $sth = $this->conn->prepare("CREATE TABLE IF NOT EXISTS `queue` (
           `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -82,6 +110,11 @@ class SqlQueueHandle implements QueueHandleInterface
         $sth->execute();
     }
 
+    /**
+     * @param Process $process
+     * @param null $queue
+     * @return Process
+     */
     public function putProcess(Process &$process, $queue = null)
     {
         if($queue === null) $queue = $this->queue;
@@ -94,6 +127,10 @@ class SqlQueueHandle implements QueueHandleInterface
         return $this->getProcess($id);
     }
 
+    /**
+     * @param $id
+     * @return Process
+     */
     public function getProcess($id)
     {
         $sth = $this->conn->prepare("SELECT * FROM queue WHERE id = :id");
@@ -102,6 +139,10 @@ class SqlQueueHandle implements QueueHandleInterface
         return SqlProcessFactory::create($sth->fetchObject(),$this);
     }
 
+    /**
+     * @param Process $process
+     * @return Process
+     */
     public function updateProcess(Process &$process)
     {
         $sth = $this->conn->prepare("SELECT * FROM queue WHERE id = :id");
@@ -110,6 +151,10 @@ class SqlQueueHandle implements QueueHandleInterface
         return SqlProcessFactory::update($process,$sth->fetchObject());
     }
 
+    /**
+     * @param Process $process
+     * @param null $queue
+     */
     public function updateQueue(Process $process, $queue = null)
     {
         if($queue === null) $queue = $this->queue;
@@ -129,11 +174,17 @@ class SqlQueueHandle implements QueueHandleInterface
         $sth->execute();
     }
 
+    /**
+     * @param $queue
+     */
     public function setQueue($queue)
     {
         $this->queue = $queue;
     }
 
+    /**
+     * @return string
+     */
     public function getQueue()
     {
         return $this->queue;
@@ -155,11 +206,17 @@ class SqlQueueHandle implements QueueHandleInterface
         return $sth->fetchObject()->count;
     }
 
+    /**
+     * @return bool
+     */
     public function hasProcess()
     {
         return $this->processInQueue() > 0;
     }
 
+    /**
+     * @param null $queue
+     */
     public function clearQueue($queue = null){
         if($queue !== null){
             $sth = $this->conn->prepare("delete from queue where queue = :queue");
@@ -170,6 +227,10 @@ class SqlQueueHandle implements QueueHandleInterface
         $sth->execute();
     }
 
+    /**
+     * @param null $queue
+     * @return null|Process
+     */
     public function reserveProcess($queue = null)
     {
         if($queue === null)$queue = $this->queue;
@@ -188,12 +249,21 @@ class SqlQueueHandle implements QueueHandleInterface
 
     }
 
+    /**
+     * @param Process $process
+     * @param null $queue
+     */
     public function finishProcess(Process &$process, $queue = null)
     {
         $process->setFinishAt(date('Y-m-d H:i:s'));
         $process->updateQueue();
     }
 
+    /**
+     * @param Process $process
+     * @param string $error
+     * @param string $queue
+     */
     public function failedProcess(Process &$process , $error = '', $queue = 'default')
     {
         $process->setError($error);
@@ -201,6 +271,9 @@ class SqlQueueHandle implements QueueHandleInterface
         $process->updateQueue();
     }
 
+    /**
+     * @param $id
+     */
     public function removeProcess($id)
     {
         $sth = $this->conn->prepare("delete from queue where id = :id");
