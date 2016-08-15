@@ -7,6 +7,12 @@ Biblioteca criada para a manipulação de processos em fila, usando filas em tab
 é possível obter o retorno do processo, assim como o seu status, podendo lançar processos que não apenas
 são executados de forma assíncrona com a thread atual da requisição, mais que também podem ser monitorados.
 
+###Instação
+
+```
+composer require molecular/queueprocessmanager dev-master
+```
+
 ###Requerimentos
 
 * PHP >= 5.4.*
