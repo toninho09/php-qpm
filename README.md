@@ -1,27 +1,27 @@
 # PHP Queue Process Manager
 Uma biblioteca php para controle de filas de processo
 
-###Introdução
+### Introdução
 
 Biblioteca criada para a manipulação de processos em fila, usando filas em tabelas de banco de dados,
 é possível obter o retorno do processo, assim como o seu status, podendo lançar processos que não apenas
 são executados de forma assíncrona com a thread atual da requisição, mais que também podem ser monitorados.
 
-###Instação
+### Instação
 
 ```
 composer require molecular/queueprocessmanager dev-master
 ```
 
-###Requerimentos
+### Requerimentos
 
 * PHP >= 5.4.*
 
-####Uso Básico
+#### Uso Básico
 O uso se resume em um cliente que coloca processos na fila, da mesma forma tem os consumidores, que 
 removem os itens da fila e fazem o seu processamento
 
-#####Código do cliente
+##### Código do cliente
 ```php
         //É criado o manipulador da fila, nesse caso por sql
         $handle = new \PhpQPM\QueueHandle\Sql\SqlQueueHandle();
@@ -49,7 +49,7 @@ removem os itens da fila e fazem o seu processamento
         //O método é executado e pode ser obtido o retorno através do método getReturn
         $bar = $process->getReturn();// 20
 ```
-####Código do consumidor
+#### Código do consumidor
 ```php
         //É criado a conexão e o Manager da mesma forma que no cliente
         $handle = new \PhpQPM\QueueHandle\Sql\SqlQueueHandle();
@@ -64,7 +64,7 @@ removem os itens da fila e fazem o seu processamento
 
 Simples. =)
 
-###Caracteristicas
+### Caracteristicas
 
 O PHP Queue Process Manager utiliza o [Super_Closure](https://github.com/jeremeamia/super_closure) Para
 Serializar os Closure e coloca-los na fila, aceitando varias formas de closure e possuindo recursos para serialização de 
@@ -74,7 +74,7 @@ Alem dos closures é possível estender a classe \PhpQPM\Process\ProcessQueueabl
 método run na fila, esse método será executado assim que for obtido da fila, alem do método run 
 é possível ter acesso direto ao processo.
 
-####Exemplo ProcessQueueable
+#### Exemplo ProcessQueueable
 
 ```php
         //A Classe deve estender ProcessQueueable para poder ser executada na fila
@@ -100,7 +100,7 @@ método run na fila, esse método será executado assim que for obtido da fila, 
         $bar = $process->getReturn();// 10
 ```
 
-###Manipulando o processo
+### Manipulando o processo
 
 Ao colocar um item na fila, é obtido um observer que pode monitorar o processo na fila, algumas das funções
 que esse observer possui é verificar o status e obter o retorno da fila, assim como atualizar o próprio observer
